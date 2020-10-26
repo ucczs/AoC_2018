@@ -9,6 +9,10 @@
 *.obj
 *.elf
 
+# Videos
+*.mkv
+*.mp4
+
 # Linker output
 *.ilk
 *.map
