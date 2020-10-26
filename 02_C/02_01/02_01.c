@@ -55,9 +55,9 @@ int main(void)
     char line[INPUT_LENGTH+INPUT_OFFSET];
 
 #if(TEST_RUN == 1)
-    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\02_C\\test.txt", "r");
+    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\02_C\\02_01\\test.txt", "r");
 #else
-    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\02_C\\input.txt", "r");
+    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\02_C\\02_01\\input.txt", "r");
 #endif
 
     if(fp == NULL)
