@@ -14,6 +14,7 @@ typedef struct{
     int yPos;
     int width;
     int length;
+    int nonOverlappingCnt;
 }claim;
 
 typedef struct{
@@ -186,6 +187,7 @@ void processInputLine(char *line, claimList *cList)
     if( *line == '#' )
     {
         claim newClaim;
+        newClaim.nonOverlappingCnt = 0;
 
         getID(line, &newClaim);
         getPos(line, &newClaim);
@@ -239,7 +241,14 @@ void fillMapWithClaims(Map *fabricMap, claimList *cList)
                 int yPosFabric = currentClaim.yPos;
                 int index = fabricMap->maxWidth * (i + yPosFabric) + xPosFabric + j;
 
-                fabricMap->mapVal[index]++;
+                if( fabricMap->mapVal[index] == 0)
+                {
+                    fabricMap->mapVal[index] = currentClaim.ID;
+                }
+                else
+                {
+                    fabricMap->mapVal[index] = -1;
+                }
             }
         }
     }
@@ -258,6 +267,59 @@ int countOverlapping(Map *fabricMap)
     return overlap_cnt;
 }
 
+void compareNonOverlapWithSize(claimList *cList)
+{
+    for (int i = 0; i < cList->used; i++)
+    {
+        claim currentClaim = cList->array[i];
+
+        int total_size = currentClaim.length * currentClaim.width;
+        int non_overlapping_cnt = currentClaim.nonOverlappingCnt;
+
+        if(total_size == non_overlapping_cnt)
+        {
+            printf("Lonley ID: %d\n", i+1);
+            printf("Size: %d\n\n", total_size);
+        }
+    }
+}
+
+void findNonOverlappingClaim(Map *fabricMap, claimList *cList)
+{
+    for (int i = 0; i < fabricMap->maxLength * fabricMap->maxWidth; i++)
+    {
+        int fabricMapID = fabricMap->mapVal[i];
+        if( (fabricMapID != -1) && (fabricMapID != 0) )
+        {
+            cList->array[fabricMapID-1].nonOverlappingCnt++;
+        }
+    }
+
+    compareNonOverlapWithSize(cList);
+}
+
+void printMap(Map *fabricMap)
+{
+    for (int i = 0; i < fabricMap->maxLength * fabricMap->maxWidth; i++)
+    {
+        int fabricMapID = fabricMap->mapVal[i];
+
+        if(fabricMapID >= 0)
+        {
+            printf("%04d ", fabricMapID);
+        }
+        else
+        {
+            printf("XXXX ");
+        }
+
+        if((i+1) % fabricMap->maxWidth == 0)
+        {
+            printf("\n");
+        }
+    }
+}
+
 int main(void)
 {
     FILE *fp;
@@ -270,9 +332,9 @@ int main(void)
     init_ClaimList(&cList, 1);
 
 #if(TEST_RUN == 1)
-    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\03_C\\03_02\\test.txt", "r");
+    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\03_C\\03_01\\test.txt", "r");
 #else
-    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\03_C\\03_02\\input.txt", "r");
+    fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\03_C\\03_01\\input.txt", "r");
 #endif
 
     if(fp == NULL)
@@ -290,8 +352,8 @@ int main(void)
     createMap(&fabricMap);
     fillMapWithClaims(&fabricMap, &cList);
 
-    overlapping_area = countOverlapping(&fabricMap);
-    printf("Overlapping area: %d", overlapping_area);
+    findNonOverlappingClaim(&fabricMap, &cList);
+    //printMap(&fabricMap);
 
     free(fabricMap.mapVal);
     free(cList.array);
