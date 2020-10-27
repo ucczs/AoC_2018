@@ -12,6 +12,7 @@
 # Videos
 *.mkv
 *.mp4
+*.sfk
 
 # Linker output
 *.ilk

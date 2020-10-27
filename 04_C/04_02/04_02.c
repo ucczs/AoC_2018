@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define TEST_RUN 0
 #define MAX_LINE_LENGTH 45
 #define RELEVANT_MINUTES 60
 
@@ -114,22 +113,16 @@ int extractGuardID(char *line)
 void extractActionFromLine(char *line, actionSet *actionSet)
 {
     if( line[19] == 'f')
-    {
         actionSet->action = FallAsleep;
-    }
     else if( line[19] == 'w')
-    {
         actionSet->action = WakeUp;
-    }
     else if( line[19] == 'G')
     {
         actionSet->action = ShiftStart;
         actionSet->guardID = extractGuardID(line);
     }
     else
-    {
         printf("Error during Action extracting!\n");
-    }
 }
 
 void processInputLine(char *line, actionSetList *actionSetList)
@@ -147,58 +140,28 @@ int comperator_fct(const void *v1, const void *v2)
 {
     const actionSet *p1 = (actionSet *)v1;
     const actionSet *p2 = (actionSet *)v2;
+
     if (p1->date.month < p2->date.month)
-    {
         return -1;
-    }
     else if (p1->date.month > p2->date.month)
-    {
         return +1;
-    }
-    else
-    {
-        if(p1->date.day < p2->date.day)
-        {
-            return -1;
-        }
-        else if(p1->date.day > p2->date.day)
-        {
-            return +1;
-        }
-        else
-        {
-            if(p1->date.hour < p2->date.hour)
-            {
-                return -1;
-            }
-            else if(p1->date.hour > p2->date.hour)
-            {
-                return +1;
-            }
-            else
-            {
-                if(p1->date.minute < p2->date.minute)
-                {
-                    return -1;
-                }
-                else if(p1->date.minute > p2->date.minute)
-                {
-                    return +1;
-                }
-                else
-                {
-                    return 0;
-                }
-            }
-        }
-    }
+
+    if(p1->date.day < p2->date.day)
+        return -1;
+    else if(p1->date.day > p2->date.day)
+        return +1;
+
+    if(p1->date.hour < p2->date.hour)
+        return -1;
+    else if(p1->date.hour > p2->date.hour)
+        return +1;
+
+    if(p1->date.minute < p2->date.minute)
+        return -1;
+    else if(p1->date.minute > p2->date.minute)
+        return +1;
 
     return 0;
-}
-
-void sortActionListByDate(actionSetList *actionSetList)
-{
-    qsort(actionSetList->array, actionSetList->used, sizeof(actionSet), comperator_fct);
 }
 
 guardStatistic* getGuard(guardStatisticList *guardList, int guardID)
@@ -343,11 +306,7 @@ int main(void)
     FILE *fp;
     char line[MAX_LINE_LENGTH];
 
-#if (TEST_RUN == 1)
-    fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\04_C\\04_02\\test.txt", "r");
-#else
     fp = fopen("D:\\Creativity\\Advent_of_Code\\AoC_2018\\04_C\\04_02\\input.txt", "r");
-#endif
 
     if(fp == NULL)
     {
@@ -363,7 +322,7 @@ int main(void)
         processInputLine(&line[0], &actionList);
     }
 
-    sortActionListByDate(&actionList);
+    qsort(actionList.array, actionList.used, sizeof(actionSet), comperator_fct);
     addGuardIDForEachAction(&actionList);
 
     guardStatisticList guardList;
